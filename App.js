@@ -1,22 +1,25 @@
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import HomeScreen from './screens/HomeScreen';
 import ScannerScreen from './screens/ScannerScreen';
 import ViewScreen from "./screens/ViewScreen";
+import LoginScreen from './screens/LoginScreen';
+import HistoryScreen from './screens/HistoryScreen';
 
 const Stack = createStackNavigator();
 
-export default function App() {
+export default function App ()
+{
   return (
     <NavigationContainer>
       <Stack.Navigator
-        initialRouteName="Home"
-        screenOptions={{ headerShown: false }}
+        initialRouteName="login"
+        screenOptions={ { headerShown: false } }
       >
-        <Stack.Screen name="Home" component={HomeScreen} />
-        <Stack.Screen name="Scanner" component={ScannerScreen} />
-          <Stack.Screen name="ViewScreen" component={ViewScreen} />
+        <Stack.Screen name="login" component={ LoginScreen } />
+        <Stack.Screen name="scanner" component={ ScannerScreen } />
+        <Stack.Screen name="ViewScreen" component={ ViewScreen } />
+        <Stack.Screen name="HistoryScreen" component={ HistoryScreen } />
       </Stack.Navigator>
     </NavigationContainer>
   );
