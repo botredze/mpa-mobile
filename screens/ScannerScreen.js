@@ -159,15 +159,6 @@ export default function ScannerScreen ( { navigation } )
         </Text>
       </TouchableOpacity>
 
-      <View style={ styles.btn_down }>
-        <TouchableOpacity style={ styles.btn_down_content }>
-          <Image source={ scannerImg } style={ styles.scanner_img } />
-        </TouchableOpacity>
-        <TouchableOpacity style={ styles.btn_down_content } onPress={ toHistory }>
-          <Image source={ historyImg } style={ styles.history_img } />
-        </TouchableOpacity>
-      </View>
-
       <ErrorModal
         isVisible={ errorModalVisible }
         errorMessage={ errorMessage }

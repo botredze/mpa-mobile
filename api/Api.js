@@ -14,3 +14,16 @@ export async function loginUser ( formData )
         console.log( error );
     }
 }
+
+
+export async function getUsedTalons(data){
+    try
+    {
+        const response = await axios.post(`${ API }/get_history`, data );
+        console.log( response );
+        return response.data;
+    } catch ( error )
+    {
+        console.log( error );
+    }
+}
