@@ -3,6 +3,8 @@ import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-nati
 import { getUsedTalons } from "../api/Api";
 import {PanGestureHandler, State} from "react-native-gesture-handler";
 import {useNavigation} from "@react-navigation/native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { ViewPropTypes } from 'deprecated-react-native-prop-types'
 
 const HomeScreen = () => {
     const navigation = useNavigation();
@@ -13,50 +15,58 @@ const HomeScreen = () => {
         fetchData();
     }, []);
 
-    const fetchData = async () => {
-        const formdata = {
-            id: 2
-        }
+    const fetchData = async (endpoint = '/api/get_history/day') => {
+        const userDataString = await AsyncStorage.getItem('userData');
+        if (userDataString) {
+            const userData = JSON.parse(userDataString);
+            console.log('User data:', userData);
+            const formdata = {
+                id: userData.codeid
+            };
+            try {
+                const response = await getUsedTalons({...formdata, endpoint});
 
-
-        try {
-            const response = await getUsedTalons(formdata);
-
-            console.log(response)
-            // Assuming response.data contains the array of items
-            setTableData(response.data || []);
-        } catch (err) {
-            console.error('Request error:', err.message);
+                console.log(response);
+                setTableData(response.data || []);
+            } catch (err) {
+                console.error('Request error:', err.message);
+            }
         }
     };
 
-    const filterData = async (days) => {
-        try {
-            const formdata = {
-                id: 2, // Replace with the actual value
-                dateRange: days
-            };
+    const filterData = (days) => {
+        let endpoint;
 
-            const response = await getUsedTalons(formdata);
-
-            // Assuming response.data contains the array of items
-            setTableData(response.data || []);
-        } catch (err) {
-            console.error('Request error:', err.message);
+        switch (days) {
+            case 1:
+                endpoint = '/api/get_history/day';
+                break;
+            case 2:
+                endpoint = '/api/get_history/three_day';
+                break;
+            case 7:
+                endpoint = '/api/get_history/week';
+                break;
+            case 31:
+                endpoint = '/api/get_history/month';
+                break;
+            default:
+                endpoint = '/api/get_history/day';
         }
+
+        fetchData(endpoint);
     };
 
     const handleSwipeRight = ({ nativeEvent }) => {
-        console.log('HUI HUI HUI hui ')
-            navigation.navigate('scanner');
+            navigation.navigate('Сканер');
     };
 
     const renderButtons = () => {
         const buttons = [
             { label: 'За сегодня', days: 1 },
             { label: 'Вчера', days: 2 },
-            { label: 'Последние 3 дня', days: 3 },
-            { label: 'Последние 7 дней', days: 7 },
+            { label: 'Неделя', days: 7 },
+            { label: 'Месяц', days: 31 },
         ];
 
         return buttons.map((button) => (
@@ -69,6 +79,15 @@ const HomeScreen = () => {
             </TouchableOpacity>
         ));
     };
+
+    
+    const handleLogout = async () => {
+        await AsyncStorage.clear();
+
+        navigation.replace('login');
+    };
+
+
 
     return (
         <View style={styles.mainContainer}>
@@ -88,59 +107,76 @@ const HomeScreen = () => {
                     {renderButtons()}
                 </ScrollView>
             </View>
-
-            {/* Table */}
-            <ScrollView style={styles.tableContainer}>
-                <View style={styles.tableHeader}>
-                    <Text style={[styles.tableHeaderText, styles.tableCellSmall]}>№</Text>
-                    <Text style={[styles.tableHeaderText, styles.tableCellSmall]}>АЗС</Text>
-                    <Text style={[styles.tableHeaderText, styles.tableCellMedium]}>Код</Text>
-                    <Text style={[styles.tableHeaderText, styles.tableCellLarge]}>Дата</Text>
-                </View>
-
-                {tableData.map((item, index) => (
-                    item.codeid !== null && item.azs !== null && item.barcode !== null && item.date_use !== null && (
-                        <View key={index} style={styles.tableRow}>
-                            <Text style={[styles.tableCell, styles.tableCellSmall]}>{item.codeid}</Text>
-                            <Text style={[styles.tableCell, styles.tableCellSmall]}>{item.azs}</Text>
-                            <Text style={[styles.tableCell, styles.tableCellMedium]}>{item.barcode}</Text>
-                            <Text style={[styles.tableCell, styles.tableCellLarge]}>{item.date_use}</Text>
-                        </View>
-                    )
-                ))}
-            </ScrollView>
+{/* Table */}
+<ScrollView style={styles.tableContainer}>
+        {tableData.map((item, index) => (
+          item.codeid !== null &&
+          item.azs !== null &&
+          item.barcode !== null &&
+          item.date_use !== null && (
+            <View key={index} style={styles.tableRow}>
+              <View style={styles.tableItem}>
+                <Text style={styles.label}>№ талона</Text>
+                <Text style={styles.value}>{item.codeid}</Text>
+              </View>
+              <View style={styles.tableItem}>
+                <Text style={styles.label}>Название АЗС</Text>
+                <Text style={styles.value}>{item.nameid_azs}</Text>
+              </View>
+              <View style={styles.tableItem}>
+                <Text style={styles.label}>Штрих код</Text>
+                <Text style={styles.value}>{item.barcode}</Text>
+              </View>
+              <View style={styles.tableItem}>
+                <Text style={styles.label}>Дата и время</Text>
+                <Text style={styles.value}>{item.date_use}</Text>
+              </View>
+            </View>
+          )
+        ))}
+      </ScrollView>
+            {/* <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+                <Text style={styles.buttonText}>Logout</Text>
+            </TouchableOpacity> */}
 
         </View>
     );
 };
 
 const styles = StyleSheet.create({
+    logoutButton: {
+        backgroundColor: 'red', // Change color as needed
+        padding: 10,
+        borderRadius: 5,
+        marginTop: 12,
+    },
     tableContainer: {
         marginTop: 10,
-        //backgroundColor: 'white',
         borderRadius: 5,
         elevation: 5,
-    },
-    tableHeader: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        paddingHorizontal: 12,
-        paddingVertical: 8,
+      },
+      tableRow: {
         borderBottomWidth: 1,
         borderBottomColor: '#ccc',
-    },
-    tableHeaderText: {
-        fontWeight: 'bold',
-        textAlign: 'center',
-    },
-    tableRow: {
+        marginBottom: 8,
+      },
+      tableItem: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         paddingHorizontal: 12,
-        paddingVertical: 12,
-       borderBottomWidth: 1,
-        borderBottomColor: '#ccc',
-    },
+        paddingVertical: 3,
+      },
+      label: {
+        fontWeight: 'bold',
+        marginRight: 4,
+        fontSize: 15
+      },
+      value: {
+        flex: 1,
+        textAlign: 'right',
+        fontSize: 15
+      },
+      
     tableCell: {
         flex: 1,
         textAlign: 'center',

@@ -16,10 +16,22 @@ export async function loginUser ( formData )
 }
 
 
-export async function getUsedTalons(data){
+export async function getUsedTalons(data, endpoint = '/get_history') {
+    try {
+        const response = await axios.post(`${API}${endpoint}`, data);
+        console.log(response);
+        return response.data;
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
+}
+
+
+export async function getTalonData(data){
     try
     {
-        const response = await axios.post(`${ API }/get_history`, data );
+        const response = await axios.post(`${ API }/barcode`, data );
         console.log( response );
         return response.data;
     } catch ( error )
@@ -27,3 +39,18 @@ export async function getUsedTalons(data){
         console.log( error );
     }
 }
+
+
+
+export async function useTalon(data){
+    try
+    {
+        const response = await axios.post(`${ API }/use_talon`, data );
+        console.log( response );
+        return response.data;
+    } catch ( error )
+    {
+        console.log( error );
+    }
+}
+
