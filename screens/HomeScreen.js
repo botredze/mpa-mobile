@@ -153,7 +153,9 @@ const styles = StyleSheet.create({
     tableContainer: {
         marginTop: 10,
         borderRadius: 5,
-        elevation: 5,
+        elevation: 0,
+        shadowOpacity: 0,
+        borderBottomWidth: 0,
       },
       tableRow: {
         borderBottomWidth: 1,
@@ -210,6 +212,7 @@ const styles = StyleSheet.create({
     },
     buttonsContainer: {
         marginBottom: 16,
+        boxShadow: 'none',
     },
     buttonsContentContainer: {
         flexDirection: 'row',

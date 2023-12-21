@@ -79,10 +79,8 @@ export default function ScannerScreen({navigation}) {
             {
               text: 'OK',
               onPress: () => {
-                // Reset relevant state variables after the user acknowledges the error
                 setScanned(false);
                 setActivateBarcode('');
-                // Add any additional handling as needed
               },
             },
           ],

@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, Alert, TouchableWithoutFeedback, Keyboard } from 'react-native';
+import { View, Text, StyleSheet, Alert, TouchableWithoutFeedback, Image, Keyboard } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import SmoothPinCodeInput from 'react-native-smooth-pincode-input';
 import CustomPinKeyboard from './CustomPinKeyboard';
 import { LogBox } from 'react-native';
+import logoImage from '../assets/logo-mpa.png';
 
 import { loginUser } from '../api/Api';
 
@@ -61,8 +62,12 @@ const LoginScreen = () => {
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+
       <View style={styles.container}>
-        <Text style={styles.title}>Войти</Text>
+        {/* Logo */}
+        <Image source={logoImage} style={styles.logo} resizeMode="contain" />
+
+        {/*<Text style={styles.title}>Войти</Text>*/}
 
         <SmoothPinCodeInput
           cellStyle={{
@@ -110,14 +115,19 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 16,
-    marginTop: 150
+    marginTop: 150,
+  },
+  logo: {
+    width: 130, // Adjust width as needed
+    height: 130, // Adjust height as needed
+    marginBottom: 16,
   },
   title: {
     fontSize: 34,
     marginBottom: 16,
   },
   keyboardContainer: {
-    marginTop: 70,
+    marginTop: 20,
   },
 });
 

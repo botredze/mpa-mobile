@@ -3,14 +3,11 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import ScannerScreen from './screens/ScannerScreen';
-import ViewScreen from "./screens/ViewScreen";
 import LoginScreen from './screens/LoginScreen';
-import HistoryScreen from './screens/HistoryScreen';
 import HomeScreen from "./screens/HomeScreen";
 import Ionicons from 'react-native-vector-icons/Ionicons'; // Import Ionicons from the appropriate library
 import CustomHeader from './screens/CustomHeader';
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { onPress } from 'deprecated-react-native-prop-types/DeprecatedTextPropTypes';
 import {useNavigation} from "@react-navigation/native";
 import { TouchableOpacity } from 'react-native';
 
@@ -29,7 +26,7 @@ const HomeTabs = () => {
   
     return (
       <Tab.Navigator
-        screenOptions={({ route }) => ({
+        screenOptions={ ({ route }) => ({
           headerShown: false,
           tabBarIcon: ({ color, size }) => {
             let iconName;
@@ -46,7 +43,7 @@ const HomeTabs = () => {
           },
         })}
       >
-        <Tab.Screen name="Жыйынтыктар(Отчет)" component={HomeScreen} />
+        <Tab.Screen name="Жыйынтыктар(Отчет)" component={HomeScreen}/>
         <Tab.Screen
           name="Выйти"
           options={{
@@ -72,12 +69,11 @@ export default function App() {
         <NavigationContainer>
             <Stack.Navigator
                 initialRouteName="login"
-                screenOptions={{ headerShown: false }}
+                screenOptions={{ headerShown: false, headerShadowVisible: false }}
+
             >
                 <Stack.Screen name="HomeTabs" component={HomeTabs} />
                 <Stack.Screen name="login" component={LoginScreen} />
-                <Stack.Screen name="ViewScreen" component={ViewScreen} />
-                <Stack.Screen name="HistoryScreen" component={HistoryScreen} />
             </Stack.Navigator>
         </NavigationContainer>
     );
