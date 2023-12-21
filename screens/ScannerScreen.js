@@ -316,10 +316,13 @@ const styles = StyleSheet.create({
         padding: 10,
         borderRadius: 5,
         marginTop: 20,
+        marginBottom: 5
     },
     activateButtonText: {
         color: 'white',
         textAlign: 'center',
+        fontWeight: 'bold',
+        fontSize: 20,
     },
     container: {
         flex: 1,
@@ -377,6 +380,8 @@ const styles = StyleSheet.create({
     closeButtonText: {
         color: 'black',
         textAlign: 'center',
+        fontWeight: 'bold',
+        fontSize: 20
     },
 
 });
