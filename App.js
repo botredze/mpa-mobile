@@ -10,6 +10,7 @@ import CustomHeader from './screens/CustomHeader';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {useNavigation} from "@react-navigation/native";
 import { TouchableOpacity } from 'react-native';
+import NumberInputScreen from "./screens/CustomHeader";
 
 
 const Stack = createStackNavigator();
@@ -35,8 +36,8 @@ const HomeTabs = () => {
               iconName = 'ios-list';
             } else if (route.name === 'Сканер') {
               iconName = 'ios-barcode';
-            } else if (route.name === 'Выйти') {
-              iconName = 'ios-exit'; // Change this to the desired logout icon
+            } else if (route.name === 'Ручной ввод') {
+              iconName = 'ios-search'; // Change this to the desired logout icon
             }
   
             return <Ionicons name={iconName} size={size} color={color} />;
@@ -44,22 +45,9 @@ const HomeTabs = () => {
         })}
       >
         <Tab.Screen name="Жыйынтыктар(Отчет)" component={HomeScreen}/>
-        <Tab.Screen
-          name="Выйти"
-          options={{
-            tabBarButton: (props) => (
-              <TouchableOpacity
-                {...props}
-                onPress={() => {
-                  handleLogout();
-                  props.accessibilityState.selected = false; 
-                }}
-              />
-            ),
-          }}
-          component={CustomHeader}
-        />
         <Tab.Screen name="Сканер" component={ScannerScreen} />
+          <Tab.Screen name="Ручной ввод" component={NumberInputScreen}
+          />
       </Tab.Navigator>
     );
   };

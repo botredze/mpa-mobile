@@ -16,10 +16,17 @@ export async function loginUser ( formData )
 }
 
 
-export async function getUsedTalons(data, endpoint = '/get_history') {
+export async function getUsedTalons(data) {
     try {
+
+        console.log(data)
+        const endpoint = data.endpoint
+        console.log('EndPoint', endpoint)
+        console.log(`${API}${endpoint}`)
         const response = await axios.post(`${API}${endpoint}`, data);
+
         console.log(response);
+       console.log(`${API}${endpoint}`, data)
         return response.data;
     } catch (error) {
         console.error(error);

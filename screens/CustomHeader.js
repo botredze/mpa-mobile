@@ -1,30 +1,293 @@
-import React from 'react';
-import { TouchableOpacity, Text, StyleSheet } from 'react-native';
-import Ionicons from 'react-native-vector-icons/Ionicons';
+import React, { useState } from 'react';
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  Platform,
+  Alert,
+  KeyboardAvoidingView,
+  Keyboard
+} from 'react-native';
+import { getTalonData, useTalon } from "../api/Api";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useNavigation } from "@react-navigation/native";
 
-const CustomHeader = ({ handleLogout }) => {
+const NumberInputScreen = () => {
+  const navigation = useNavigation();
+
+  const [number, setNumber] = useState('');
+  const [activateBarcode, setActivateBarcode] = useState('');
+  const [successMessageVisible, setSuccessMessageVisible] = useState(false);
+
+  const [fuelType, setFuelType] = useState('');
+  const [azsName, setAzsName] = useState('');
+  const [agentName, setAgentName] = useState('');
+  const [fuelCount, setFuelCount] = useState(0);
+
+  const handleNumberChange = (text) => {
+    const cleanedText = text.replace(/[^0-9]/g, '');
+    setNumber(cleanedText);
+  };
+
+  const handleClearInput = () => {
+    setNumber('');
+    Keyboard.dismiss();
+  };
+
+  const activateTalon = async () => {
+    try {
+      const userDataString = await AsyncStorage.getItem('userData');
+      if (userDataString) {
+        const userData = JSON.parse(userDataString);
+
+        // Combine user data with scanned data
+        const formData = {
+          barcode: activateBarcode,
+          userid: userData.codeid,
+          azs: userData.azs,
+        };
+
+        const activationResponse = await useTalon(formData);
+
+        if (activationResponse.status === 'success') {
+          handleClearInput();
+          setTimeout(() => {
+            setSuccessMessageVisible(true);
+            setTimeout(() => {
+              setSuccessMessageVisible(false);
+              navigation.navigate('Жыйынтыктар(Отчет)');
+            }, 2000);
+          }, 0);
+        } else {
+          console.error('Activation error:', activationResponse.message);
+          Alert.alert(
+              'Ошибка',
+              `${activationResponse.message}`,
+              [
+                {
+                  text: 'OK',
+                  onPress: () => {
+                  },
+                },
+              ],
+              { cancelable: false }
+          );
+        }
+      }
+    } catch (error) {
+      console.error('Error sending activation request:', error);
+    }
+  };
+
+  const showResultModal = async () => {
+    try {
+      setActivateBarcode(number);
+      Keyboard.dismiss();
+      const formData = {
+        barcode: number,
+      };
+
+      const response = await getTalonData(formData);
+
+      if (response.status === 'success') {
+        const talonData = response.data;
+
+        if (talonData) {
+          setFuelType(talonData.nameid_gsm);
+          setAzsName(talonData.nameid_azs);
+          setAgentName(talonData.nameid_agent);
+          setFuelCount(talonData.count);
+
+          Keyboard.dismiss();
+        }
+
+      } else if (response.status === 'error') {
+        Alert.alert(
+            'Ошибка',
+            `${response.message}`,
+            { cancelable: false }
+        );
+      } else {
+        console.error('Server error:', response.message);
+      }
+    } catch (error) {
+      console.error('Error in showResultModal:', error);
+    }
+  };
+
   return (
-    <TouchableOpacity style={styles.container} onPress={handleLogout}>
-      <Ionicons name="exit" size={24} color="white" />
-      <Text style={styles.text}>Выход</Text>
-    </TouchableOpacity>
+      <KeyboardAvoidingView
+          style={{ flex: 1 }}
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          keyboardVerticalOffset={Platform.OS === 'ios' ? 25 : 0}
+      >
+        <View style={styles.container}>
+          <Text style={styles.title}>Ручная проводка</Text>
+
+          <View style={styles.inputContainer}>
+            <TextInput
+                placeholder={'Введите штрих код'}
+                style={styles.input}
+                keyboardType="number-pad"
+                value={number}
+                onChangeText={handleNumberChange}
+            />
+
+            <TouchableOpacity style={styles.clearButton} onPress={handleClearInput}>
+              <Text style={styles.cancelText}>X</Text>
+            </TouchableOpacity>
+          </View>
+
+          {successMessageVisible && (
+              <View style={styles.resultContainer}>
+
+                {successMessageVisible && (
+                    <View style={styles.successMessage}>
+                      <Text style={{ color: 'green' }}>✅ Активировано!</Text>
+                    </View>
+                )}
+
+                <Text style={styles.resultText}>Данные о талоне:</Text>
+                <Text style={styles.resultValue}>Топливо: {fuelType}</Text>
+                <Text style={styles.resultValue}>Агент: {agentName}</Text>
+                <Text style={styles.resultValue}>Количество топлива: {fuelCount} литров</Text>
+
+                <TouchableOpacity
+                    style={styles.activateButton}
+                    onPress={activateTalon}
+                >
+                  <Text style={styles.activateButtonText}>Активировать</Text>
+                </TouchableOpacity>
+              </View>
+          )}
+
+          <TouchableOpacity style={styles.scanButton} onPress={showResultModal}>
+            <Text style={styles.btnText}>Активировать</Text>
+          </TouchableOpacity>
+        </View>
+      </KeyboardAvoidingView>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    marginTop: 150,
+  inputContainer: {
+    marginTop: 20,
     display: 'flex',
-    flexDirection: 'row',
+    flexDirection: "row",
+    justifyContent: 'space-between',
+    gap: 10,
+    height: 110,
+  //  backgroundColor: 'red',
+    position: "relative",
+    alignItems: "center",
+  },
+
+  container: {
+    flex: 1,
+    marginTop: 40,
+    justifyContent: 'start',
     alignItems: 'center',
-    padding: 12, // Increased padding for better visibility
-    backgroundColor: '#62B1F6', // Adjust the background color as needed
-    borderRadius: 5,
+    paddingTop: Platform.OS === 'ios' ? 20 : 0, // Поднимаем контент на iOS из-за статус-бара
+    //backgroundColor: 'red',
+    position: 'relative'
   },
-  text: {
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 20,
+  },
+  input: {
+    height: 60,
+
+    borderWidth: 1,
+    borderColor: 'gray',
+    padding: 10,
+    fontSize: 18,
+    borderRadius: 6,
+    width: '70%',
+   // marginBottom: 20,
+    ...Platform.select({
+      ios: {
+        borderBottomWidth: 1,
+      },
+      android: {},
+    }),
+  },
+  clearButton: {
+    backgroundColor: '#f34f4f',
+    //padding: 5,
+    borderRadius: 9,
+   // marginBottom: 20,
+    height: 40,
+    width: 45,
+    alignItems: "center"
+  },
+
+  scanButton: {
+    backgroundColor: '#396ad9',
+    padding: 10,
+    width: '80%',
+    height: 50,
+    alignItems: 'center',
+    borderRadius: 17,
+    marginBottom: 20,
+    position: 'absolute',
+    bottom: 0
+  },
+
+  btnText: {
     color: 'white',
-    marginLeft: 8,
+    fontSize: 25,
+    fontWeight: 'bold'
   },
+  successMessage: {
+    backgroundColor: '#dff0d8',
+    padding: 10,
+    borderRadius: 5,
+    marginBottom: 10,
+    alignItems: 'center',
+  },
+  resultContainer: {
+    backgroundColor: '#ffffff',
+    padding: 20,
+    borderRadius: 10,
+    marginTop: 10,
+    alignItems: 'center',
+  },
+  resultText: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginBottom: 10,
+  },
+  resultValue: {
+    fontSize: 16,
+    marginBottom: 15,
+  },
+  activateButton: {
+    backgroundColor: '#82a9f1',
+    padding: 10,
+    borderRadius: 5,
+    marginTop: 20,
+    marginBottom: 5
+  },
+  activateButtonText: {
+    color: 'white',
+    textAlign: 'center',
+    fontWeight: 'bold',
+    fontSize: 20,
+  },
+  cancelText: {
+    color: 'white',
+    fontSize:  35,
+    lineHeight: 40,
+    textAlign: 'center',
+    alignItems: 'center',
+    fontWeight: 'bold'
+  }
+
 });
 
-export default CustomHeader;
+export default NumberInputScreen;

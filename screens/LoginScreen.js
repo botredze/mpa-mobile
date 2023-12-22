@@ -8,6 +8,7 @@ import { LogBox } from 'react-native';
 import logoImage from '../assets/logo-mpa.png';
 
 import { loginUser } from '../api/Api';
+import {LinearGradient} from "expo-linear-gradient";
 
 const LoginScreen = () => {
   const navigation = useNavigation();
@@ -29,7 +30,7 @@ const LoginScreen = () => {
           await AsyncStorage.setItem('userData', JSON.stringify(userData));
 
           console.log('Successful response:', response.status);
-          navigation.navigate('HomeTabs');
+          navigation.replace('HomeTabs');
         } else {
           console.error('Login failed:', response.message);
           Alert.alert('Ошибка авторизации', 'Пин не найден');
@@ -61,67 +62,94 @@ const LoginScreen = () => {
   };
 
   return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+        <View style={styles.container}>
+          <LinearGradient
+              colors={['#1b55a4', '#1b55a4']} // Задайте два цвета для градиента
+              style={styles.gradientContainer}
+          >
+            {/* Ваш существующий код */}
+            <Image source={logoImage} style={styles.logo} resizeMode="contain" />
 
-      <View style={styles.container}>
-        {/* Logo */}
-        <Image source={logoImage} style={styles.logo} resizeMode="contain" />
+            <SmoothPinCodeInput
+                cellStyle={{
+                  borderBottomWidth: 3,
+                  borderColor: 'white',
+                  width: 40,
+                  height: 40,
+                  marginHorizontal: 10,
+                }}
+                cellStyleFocused={{
+                  borderColor: 'black',
+                }}
+                textProps={{
+                  style: {
+                    fontSize: 35,
+                    color: 'white',
+                    textAlign: 'center',
+                  },
+                }}
+                textStyle={{
+                  fontSize: 30,
+                  color: 'white',
+                  fontWeight: 'bold',
+                }}
+                value={code}
+                onTextChange={(code) => {
 
-        {/*<Text style={styles.title}>Войти</Text>*/}
+                  setCode(code);
+                  onFulfill(code)
+                  if (code.length === 3) {
+                    handleLogin();
+                  }
+                }
 
-        <SmoothPinCodeInput
-          cellStyle={{
-            borderBottomWidth: 2,
-            borderColor: 'blue',
-            width: 40,
-            height: 40,
-            marginHorizontal: 10,
-          }}
-          cellStyleFocused={{
-            borderColor: 'black',
-          }}
-          textProps={{
-            style: {
-              fontSize: 20,
-              color: 'black',
-              textAlign: 'center',
-            },
-          }}
-          value={code}
-          onTextChange={(code) => {
-            
-            setCode(code);
-            onFulfill(code)
-            if (code.length === 3) {
-              handleLogin();
-            }
-          }
-        
-        }
-          codeLength={4} // Set the code length to 4
-        />
+                }
+                codeLength={4} // Set the code length to 4
+            />
 
-        <View style={styles.keyboardContainer}>
-          <CustomPinKeyboard onPress={handleKeyPress} onBackspace={handleBackspace} />
+
+            <View style={styles.keyboardContainer}>
+              <CustomPinKeyboard onPress={handleKeyPress} onBackspace={handleBackspace} />
+            </View>
+          </LinearGradient>
         </View>
-      </View>
-    </TouchableWithoutFeedback>
+      </TouchableWithoutFeedback>
   );
 };
-
 const styles = StyleSheet.create({
   container: {
+  //  marginTop: 150,
+    width: '100%',
+    flex: 1,
+  },
+  gradientContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     padding: 16,
-    marginTop: 150,
+    //marginTop: 150,
   },
   logo: {
-    width: 130, // Adjust width as needed
-    height: 130, // Adjust height as needed
+    //backgroundColor: 'white',
+   // display: 'block',
+    width: 230,
+    height: 230,
     marginBottom: 16,
+    marginTop: 50
   },
+  // container: {
+  //   flex: 1,
+  //   justifyContent: 'center',
+  //   alignItems: 'center',
+  //   padding: 16,
+  //   marginTop: 150,
+  // },
+  // logo: {
+  //   width: 130, // Adjust width as needed
+  //   height: 130, // Adjust height as needed
+  //   marginBottom: 16,
+  // },
   title: {
     fontSize: 34,
     marginBottom: 16,

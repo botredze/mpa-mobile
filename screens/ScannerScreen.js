@@ -7,6 +7,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {getTalonData, useTalon} from '../api/Api';
 import { ViewPropTypes } from 'deprecated-react-native-prop-types'
 
+
 export default function ScannerScreen({navigation}) {
     const [hasPermission, setHasPermission] = useState(null);
     const [scanned, setScanned] = useState(false);
@@ -253,9 +254,9 @@ export default function ScannerScreen({navigation}) {
                       )}
 
                         <Text style={styles.resultText}>Данные о толоне:</Text>
-                        <Text style={styles.resultValue}>Топливо: {fuelType}</Text>
+                        <Text style={styles.resultValue}>ГСМ: {fuelType}</Text>
                         <Text style={styles.resultValue}>Агент: {agentName}</Text>
-                        <Text style={styles.resultValue}>Количество топлива: {fuelCount} литров</Text>
+                        <Text style={styles.resultValue}>Номинал: {fuelCount} литров</Text>
                         <TouchableOpacity
                             style={styles.activateButton}
                             onPress={activateTalon}
@@ -263,7 +264,7 @@ export default function ScannerScreen({navigation}) {
                             <Text style={styles.activateButtonText}>Активировать</Text>
                         </TouchableOpacity>
                         <TouchableOpacity
-                            style={styles.closeButton} // Add your styles for the close button
+                            style={styles.closeButton}
                             onPress={closeResultModal}
                         >
                             <Text style={styles.closeButtonText}>Закрыть</Text>
