@@ -209,10 +209,6 @@ const HomeScreen = () => {
 
         return (
             <View style={styles.mainContainer}>
-                <PanGestureHandler onGestureEvent={handleSwipeRight}>
-                    <View style={styles.swipeArea}/>
-                </PanGestureHandler>
-
                 {renderHeader()}
                 <Modal
                     animationType="slide"
