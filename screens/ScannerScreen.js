@@ -64,7 +64,7 @@ export default function ScannerScreen({navigation}) {
         setModalVisible(true);
   
         if (talonData) {
-          console.log('Data:', talonData);
+          //console.log('Data:', talonData);
           setFuelType(talonData.nameid_gsm);
           setAzsName(talonData.nameid_azs);
           setAgentName(talonData.nameid_agent);
@@ -116,22 +116,16 @@ export default function ScannerScreen({navigation}) {
       const userDataString = await AsyncStorage.getItem('userData');
       if (userDataString) {
         const userData = JSON.parse(userDataString);
-        console.log('User data:', userData);
 
-        // Combine user data with scanned data
         const formData = {
           barcode: activateBarcode,
           userid: userData.codeid,
           azs: userData.azs,
         };
-        console.log(formData);
-
 
         const activationResponse =  await useTalon(formData)
 
-        console.log(activateBarcode);
-        
-        if (activationResponse.status === 'succes') {
+        if (activationResponse.status === 'success') {
             await sound.replayAsync();
             setScanned(false);
             setActivateBarcode('');
@@ -168,34 +162,13 @@ export default function ScannerScreen({navigation}) {
     }
   };
 
-
-
-
   const [fuelType, setFuelType] = useState('');
     const [azsName, setAzsName] = useState('');
     const [agentName, setAgentName] = useState('');
     const [fuelCount, setFuelCount] = useState(0);
 
-    const handleBarCodeScanned = async ({ data }) => {
-        try {
-          setScanned(true);
-          setScannedResult(data);
-      
-          if (sound) {
-            await sound.replayAsync(); 
-          }
-      
-          console.log(`Bar code with data ${data} has been scanned!`);
-      
-          await showResultModal({ data });
-        } catch (error) {
-          console.error('Error handling scanned data:', error);
-        }
-      };
-      
-
     const toggleBarcodeType = () => {
-        console.log('Toggling barcode type');
+       // console.log('Toggling barcode type');
         setBarcodeType((prevType) =>
             prevType === BarCodeScanner.Constants.BarCodeType.qr
                 ? BarCodeScanner.Constants.BarCodeType.barcode
@@ -203,9 +176,6 @@ export default function ScannerScreen({navigation}) {
         );
     };
 
-    const closeErrorModal = () => {
-        setErrorModalVisible(false);
-    };
 
     if (hasPermission === null) {
         return <Text>Requesting camera permission</Text>;

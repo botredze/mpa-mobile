@@ -34,7 +34,7 @@ const HomeScreen = () => {
         if (userDataString) {
             const userData = JSON.parse(userDataString);
             setUserdata(userData.name)
-            setAzs(userData.azs)
+            setAzs(userData.nameid_azs)
             //console.log('User data:', userData);
             const formdata = {
                 id: userData.codeid
@@ -112,7 +112,7 @@ const HomeScreen = () => {
     const confirmHandleLogout = async () => {
         setLogoutWithible(true)
         setModalVisible(true);
-        console.log('хуй')
+        //console.log('хуй')
     };
 
     const closeResultModal = async () => {
@@ -160,7 +160,7 @@ const HomeScreen = () => {
             );
         };
 
-        console.log(reportData);
+      //  console.log(reportData);
 
         return (
             <View style={styles.reportContainer}>
@@ -187,7 +187,7 @@ const HomeScreen = () => {
                             {/* Your icon component goes here */}
                             {/*<Ionicons name="ios-person" size={24} color="black"/>*/}
                             <Text style={styles.usernameText}>{userdata}</Text>
-                            <Text style={styles.azsText}> АЗС: {azs}</Text>
+                            <Text style={styles.azsText}> {azs}</Text>
                         </View>
 
 
@@ -207,8 +207,6 @@ const HomeScreen = () => {
 
         };
 
-
-    {/*{item.nameid_gsm}*/}
         return (
             <View style={styles.mainContainer}>
                 <PanGestureHandler onGestureEvent={handleSwipeRight}>
@@ -216,8 +214,6 @@ const HomeScreen = () => {
                 </PanGestureHandler>
 
                 {renderHeader()}
-
-
                 <Modal
                     animationType="slide"
                     transparent={true}
@@ -301,7 +297,7 @@ const HomeScreen = () => {
             // You can adjust the width and height as needed
             flexDirection: 'row',
             width: '90%',
-            height: '15%',
+            height: 'auto',
             // Rest of your styling...
         },
         activateButton: {
@@ -461,7 +457,7 @@ const HomeScreen = () => {
         azsText: {
             marginLeft: 50, // Add right margin for space between username and logout icon
             fontWeight: 'bold',
-            fontSize: 18,
+            fontSize: 23,
         },
 
         numContainer: {
@@ -619,7 +615,7 @@ const HomeScreen = () => {
         mainContainer: {
             flex: 1,
             padding: 16,
-            marginTop: 40,
+            //marginTop: 40,
         },
 
         numbers: {

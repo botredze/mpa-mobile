@@ -20,6 +20,7 @@ const NumberInputScreen = () => {
   const [number, setNumber] = useState('');
   const [activateBarcode, setActivateBarcode] = useState('');
   const [successMessageVisible, setSuccessMessageVisible] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
 
   const [fuelType, setFuelType] = useState('');
   const [azsName, setAzsName] = useState('');
@@ -34,6 +35,7 @@ const NumberInputScreen = () => {
   const handleClearInput = () => {
     setNumber('');
     Keyboard.dismiss();
+    setModalVisible(false);
   };
 
   const activateTalon = async () => {
@@ -55,6 +57,7 @@ const NumberInputScreen = () => {
           handleClearInput();
           setTimeout(() => {
             setSuccessMessageVisible(true);
+            setModalVisible(false);
             setTimeout(() => {
               setSuccessMessageVisible(false);
               navigation.navigate('Жыйынтыктар(Отчет)');
@@ -93,6 +96,7 @@ const NumberInputScreen = () => {
 
       if (response.status === 'success') {
         const talonData = response.data;
+        setModalVisible(true);
 
         if (talonData) {
           setFuelType(talonData.nameid_gsm);
@@ -140,7 +144,7 @@ const NumberInputScreen = () => {
             </TouchableOpacity>
           </View>
 
-          {successMessageVisible && (
+          {modalVisible && (
               <View style={styles.resultContainer}>
 
                 {successMessageVisible && (
@@ -189,7 +193,7 @@ const styles = StyleSheet.create({
     marginTop: 40,
     justifyContent: 'start',
     alignItems: 'center',
-    paddingTop: Platform.OS === 'ios' ? 20 : 0, // Поднимаем контент на iOS из-за статус-бара
+    paddingTop: Platform.OS === 'ios' ? 20 : 0,
     //backgroundColor: 'red',
     position: 'relative'
   },

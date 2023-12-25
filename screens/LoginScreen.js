@@ -24,7 +24,7 @@ const LoginScreen = () => {
       try {
         const response = await loginUser(formData);
 
-        if (response.status === 'succes') {
+        if (response.status === 'success') {
           const userData = response.data[0];
 
           await AsyncStorage.setItem('userData', JSON.stringify(userData));
