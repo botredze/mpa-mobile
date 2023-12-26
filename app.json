@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "barcode-scanner",
-    "slug": "barcode-scanner",
+    "slug": "mpa-mobile",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -29,8 +29,9 @@
     },
     "extra": {
       "eas": {
-        "projectId": "fda3d30d-2150-4d65-8cea-79de61649cb6"
+        "projectId": "509ed088-ca9e-49fb-b6fe-1a1b4be374d9"
       }
-    }
+    },
+    "owner": "baaliev"
   }
 }

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -26,11 +26,29 @@ const NumberInputScreen = () => {
   const [azsName, setAzsName] = useState('');
   const [agentName, setAgentName] = useState('');
   const [fuelCount, setFuelCount] = useState(0);
+  const [login, setLogin] = useState('');
 
   const handleNumberChange = (text) => {
     const cleanedText = text.replace(/[^0-9]/g, '');
     setNumber(cleanedText);
   };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const userDataString = await AsyncStorage.getItem('userData');
+        if (userDataString) {
+          const userData = JSON.parse(userDataString);
+          setLogin(userData.login);
+        }
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
 
   const handleClearInput = () => {
     setNumber('');
@@ -44,11 +62,11 @@ const NumberInputScreen = () => {
       if (userDataString) {
         const userData = JSON.parse(userDataString);
 
-        // Combine user data with scanned data
         const formData = {
           barcode: activateBarcode,
           userid: userData.codeid,
           azs: userData.azs,
+          username: login
         };
 
         const activationResponse = await useTalon(formData);
@@ -90,6 +108,7 @@ const NumberInputScreen = () => {
       Keyboard.dismiss();
       const formData = {
         barcode: number,
+        username: login
       };
 
       const response = await getTalonData(formData);
@@ -124,7 +143,7 @@ const NumberInputScreen = () => {
   return (
       <KeyboardAvoidingView
           style={{ flex: 1 }}
-          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          behavior={Platform.OS === 'ios' ? 'padding' : null}
           keyboardVerticalOffset={Platform.OS === 'ios' ? 25 : 0}
       >
         <View style={styles.container}>
@@ -167,9 +186,16 @@ const NumberInputScreen = () => {
               </View>
           )}
 
-          <TouchableOpacity style={styles.scanButton} onPress={showResultModal}>
-            <Text style={styles.btnText}>Активировать</Text>
-          </TouchableOpacity>
+
+            <TouchableOpacity
+                style={[
+                    styles.scanButton,
+                    Platform.OS === 'ios' ? { bottom: 0 } : null,
+                ]}
+                onPress={showResultModal}
+            >
+                <Text style={styles.btnText}>Активировать</Text>
+            </TouchableOpacity>
         </View>
       </KeyboardAvoidingView>
   );
@@ -271,7 +297,7 @@ const styles = StyleSheet.create({
     marginBottom: 15,
   },
   activateButton: {
-    backgroundColor: '#82a9f1',
+    backgroundColor: '#396AD9FF',
     padding: 10,
     borderRadius: 5,
     marginTop: 20,

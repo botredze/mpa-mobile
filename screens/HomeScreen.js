@@ -294,6 +294,7 @@ const HomeScreen = () => {
             flexDirection: 'row',
             width: '90%',
             height: 'auto',
+            //marginTop: 20
             // Rest of your styling...
         },
         activateButton: {
@@ -387,6 +388,7 @@ const HomeScreen = () => {
             flexDirection: 'column',
             //marginLeft: 10, // Расстояние между правой и левой колонками
             alignItems: 'flex-start', // Выравнивание элементов в левую сторону
+            textAlign: 'left',
             //backgroundColor: 'blue',
             width: '40%'
         },
@@ -611,7 +613,7 @@ const HomeScreen = () => {
         mainContainer: {
             flex: 1,
             padding: 16,
-            //marginTop: 40,
+            marginTop: 30,
         },
 
         numbers: {

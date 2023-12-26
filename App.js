@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -6,11 +6,10 @@ import ScannerScreen from './screens/ScannerScreen';
 import LoginScreen from './screens/LoginScreen';
 import HomeScreen from "./screens/HomeScreen";
 import Ionicons from 'react-native-vector-icons/Ionicons'; // Import Ionicons from the appropriate library
-import CustomHeader from './screens/CustomHeader';
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import {useNavigation} from "@react-navigation/native";
-import { TouchableOpacity } from 'react-native';
+import {Platform, TouchableOpacity} from 'react-native';
 import NumberInputScreen from "./screens/CustomHeader";
+import SplashScreen from "react-native-splash-screen";
 
 
 const Stack = createStackNavigator();
@@ -19,12 +18,6 @@ const Tab = createBottomTabNavigator();
 
 const HomeTabs = () => {
     const navigation = useNavigation();
-  
-    const handleLogout = async () => {
-      await AsyncStorage.clear();
-      navigation.replace('login');
-    };
-  
     return (
       <Tab.Navigator
         screenOptions={ ({ route }) => ({
@@ -53,6 +46,11 @@ const HomeTabs = () => {
   };
 
 export default function App() {
+    // useEffect(() => {
+    //     if (Platform.OS === 'android')
+    //     SplashScreen.hide()
+    // }, []);
+
     return (
         <NavigationContainer>
             <Stack.Navigator
