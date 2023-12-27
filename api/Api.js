@@ -39,11 +39,11 @@ export async function getTalonData(data){
     try
     {
         const response = await axios.post(`${ API }/barcode`, data );
-        //console.log( response );
+        console.log( response );
         return response.data;
     } catch ( error )
     {
-        //console.log( error );
+        console.log( error );
     }
 }
 

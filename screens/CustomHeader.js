@@ -27,6 +27,7 @@ const NumberInputScreen = () => {
   const [agentName, setAgentName] = useState('');
   const [fuelCount, setFuelCount] = useState(0);
   const [login, setLogin] = useState('');
+  const [userId, setUserID] = useState('');
 
   const handleNumberChange = (text) => {
     const cleanedText = text.replace(/[^0-9]/g, '');
@@ -40,6 +41,7 @@ const NumberInputScreen = () => {
         if (userDataString) {
           const userData = JSON.parse(userDataString);
           setLogin(userData.login);
+          setUserID(userData.codeid)
         }
       } catch (error) {
         console.error('Error fetching user data:', error);
@@ -64,7 +66,7 @@ const NumberInputScreen = () => {
 
         const formData = {
           barcode: activateBarcode,
-          userid: userData.codeid,
+          userid: userId,
           azs: userData.azs,
           username: login
         };
@@ -108,7 +110,8 @@ const NumberInputScreen = () => {
       Keyboard.dismiss();
       const formData = {
         barcode: number,
-        username: login
+        username: login,
+        userid: userId,
       };
 
       const response = await getTalonData(formData);
@@ -132,6 +135,7 @@ const NumberInputScreen = () => {
             `${response.message}`,
             { cancelable: false }
         );
+        handleClearInput()
       } else {
         console.error('Server error:', response.message);
       }
@@ -173,9 +177,9 @@ const NumberInputScreen = () => {
                 )}
 
                 <Text style={styles.resultText}>Данные о талоне:</Text>
-                <Text style={styles.resultValue}>Топливо: {fuelType}</Text>
+                <Text style={styles.resultValue}>ГСМ: {fuelType}</Text>
                 <Text style={styles.resultValue}>Агент: {agentName}</Text>
-                <Text style={styles.resultValue}>Количество топлива: {fuelCount} литров</Text>
+                <Text style={styles.resultValue}>Номинал: {fuelCount} литров</Text>
 
                 <TouchableOpacity
                     style={styles.activateButton}
@@ -280,7 +284,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   resultContainer: {
-    backgroundColor: '#ffffff',
+    backgroundColor: 'rgba(255,255,255,0.42)',
     padding: 20,
     borderRadius: 10,
     marginTop: 10,

@@ -19,6 +19,8 @@ export default function ScannerScreen({navigation}) {
     const cameraRef = useRef(null);
     const [login, setLogin] = useState('');
 
+    const [userId, setUserID] = useState('');
+
     useEffect(() => {
         (async () => {
             const {status} = await Camera.requestCameraPermissionsAsync();
@@ -48,6 +50,8 @@ export default function ScannerScreen({navigation}) {
                 if (userDataString) {
                     const userData = JSON.parse(userDataString);
                     setLogin(userData.login);
+                    setUserID(userData.codeid);
+                    console.log(userData)
                 }
             } catch (error) {
                 console.error('Error fetching user data:', error);
@@ -56,8 +60,6 @@ export default function ScannerScreen({navigation}) {
 
         fetchData();
     }, []);
-
-
 
     const setupSound = async () => {
         try {
@@ -83,13 +85,18 @@ export default function ScannerScreen({navigation}) {
 
             const formData = {
                 barcode: data,
+                userid: userId,
                 username: login
-            };
+            }
 
+            console.log(formData)
             const response = await getTalonData(formData);
 
+            console.log(response)
             if (response.status === 'success') {
                 const talonData = response.data;
+
+                console.log(talonData)
                 setResultModalVisible(true);
                 setModalVisible(true);
                 if (talonData) {
@@ -143,7 +150,7 @@ export default function ScannerScreen({navigation}) {
 
                 const formData = {
                     barcode: activateBarcode,
-                    userid: userData.codeid,
+                    userid: userId,
                     azs: userData.azs,
                     username: login
                 };
@@ -204,10 +211,17 @@ export default function ScannerScreen({navigation}) {
     };
 
     if (hasPermission === null) {
-        return <Text>Requesting camera permission</Text>;
+        return (
+            <View style={styles.container}>
+            <Text style={styles.title}>Requesting camera permission</Text>
+            </View>
+        );
     }
     if (hasPermission === false) {
-        return <Text>No access to camera</Text>;
+        return (
+            <View style={styles.container}>
+                <Text style={styles.title}>No access to camera</Text>
+            </View>)
     }
 
     return (
@@ -317,6 +331,13 @@ const styles = StyleSheet.create({
         height: '70%',
         position: 'relative',
     },
+
+    title: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        marginBottom: 20,
+    },
+
     toggleButton: {
         position: 'absolute',
         backgroundColor: '#62B1F6',
