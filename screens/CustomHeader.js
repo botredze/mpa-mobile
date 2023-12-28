@@ -87,7 +87,7 @@ const NumberInputScreen = () => {
           console.error('Activation error:', activationResponse.message);
           Alert.alert(
               'Ошибка',
-              `${activationResponse.message}`,
+              `${activationResponse.message }` + '/n' +`Штрих код: ${number}`,
               [
                 {
                   text: 'OK',
@@ -107,7 +107,7 @@ const NumberInputScreen = () => {
   const showResultModal = async () => {
     try {
       setActivateBarcode(number);
-      Keyboard.dismiss();
+     // Keyboard.dismiss();
       const formData = {
         barcode: number,
         username: login,
@@ -125,17 +125,17 @@ const NumberInputScreen = () => {
           setAzsName(talonData.nameid_azs);
           setAgentName(talonData.nameid_agent);
           setFuelCount(talonData.count);
-
-          Keyboard.dismiss();
         }
 
       } else if (response.status === 'error') {
         Alert.alert(
             'Ошибка',
-            `${response.message}`,
+            `${response.message}`+ ' ' +`Штрих код: ${number}`,
+            [{text: "ОК", onPress: () => handleClearInput() }],
             { cancelable: false }
         );
-        handleClearInput()
+        console.log('Хуй хуй', response.error, `Штрих код: ${number}`)
+        //handleClearInput()
       } else {
         console.error('Server error:', response.message);
       }
