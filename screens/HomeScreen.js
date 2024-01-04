@@ -1,10 +1,12 @@
 import React, {useState, useEffect, useCallback} from 'react';
 import {View, Text, TouchableOpacity, StyleSheet, ScrollView, Modal} from 'react-native';
-import {getUsedTalons} from "../api/Api";
-import {PanGestureHandler, State} from "react-native-gesture-handler";
+import {getUsedTalons, getUsedTalonsFilter} from "../api/Api";
 import {useFocusEffect, useNavigation} from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {Ionicons} from "@expo/vector-icons";
+import {DateTimePickerModal} from "react-native-modal-datetime-picker";
+import moment from "moment";
+import { startOfDay, endOfDay } from 'date-fns';
 
 const HomeScreen = () => {
     const navigation = useNavigation();
@@ -14,112 +16,130 @@ const HomeScreen = () => {
     const [azs, setAzs] = useState(0)
     const [activeButton, setActiveButton] = useState(1);
     const [modalVisible, setModalVisible] = useState(false);
+    const [isStartDatePickerVisible, setStartDatePickerVisible] = useState(false);
+    const [isEndDatePickerVisible, setEndDatePickerVisible] = useState(false);
+
+
+    const defaultStartDate = startOfDay(new Date()); 
+    const defaultEndDate = endOfDay(new Date());    
+
+    const [startDate, setStartDate] = useState(defaultStartDate);
+    const [endDate, setEndDate] = useState(defaultEndDate);
 
     const [logoutWithible, setLogoutWithible] = useState(false)
 
-    useEffect(() => {
-        fetchData();
-    }, []);
-
 
     const handleFocus = useCallback(() => {
-        fetchData();
+        fetchData(startDate,endDate);
     }, [fetchData]);
 
     useFocusEffect(handleFocus);
 
+    useEffect(() => {
+        fetchData(startDate,endDate);
+      }, [startDate, endDate]);
 
-    const fetchData = async (endpoint = '/get_history/day') => {
-        const userDataString = await AsyncStorage.getItem('userData');
-        if (userDataString) {
-            const userData = JSON.parse(userDataString);
-            setUserdata(userData.name)
-            setAzs(userData.nameid_azs)
-            //console.log('User data:', userData);
-            const formdata = {
-                id: userData.codeid
-            };
-            try {
-                const response = await getUsedTalons({...formdata, endpoint});
-
-              //  //console.log(response);
-                setTableData(response.data || []);
-                setReportData(response.total || [])
-            } catch (err) {
-                console.error('Request error:', err.message);
-            }
-        }
-    };
-
-    const filterData = (days) => {
-        let endpoint;
-
-        switch (days) {
-            case 1:
-                endpoint = '/get_history/day';
-                break;
-            case 2:
-                endpoint = '/get_history/tommorow';
-                break;
-            case 3:
-                endpoint = '/get_history/three_day';
-                break;
-            case 7:
-                endpoint = '/get_history/week';
-                break;
-            case 31:
-                endpoint = '/get_history/month';
-                break;
-            default:
-                endpoint = '/get_history/day';
-        }
-
-        fetchData(endpoint);
-    };
-
-    const handleSwipeRight = ({nativeEvent}) => {
-        navigation.navigate('Сканер');
-    };
-
-    const renderButtons = () => {
-        const buttons = [
-            {label: 'За сегодня', days: 1},
-            {label: 'Вчера', days: 2},
-            {label: '3 Дня', days: 3},
-            {label: 'Неделя', days: 7},
-            {label: 'Месяц', days: 31},
-        ];
-
-        return buttons.map((button) => (
-            <TouchableOpacity
-                key={button.label}
-                style={[
-                    styles.button,
-                    activeButton === button.days ? styles.activeButton : null,
-                ]}
-                onPress={() => handleButtonPress(button.days)}
-            >
-                <Text style={styles.buttonText}>{button.label}</Text>
-            </TouchableOpacity>
-        ));
-    };
-
-    const handleButtonPress = (days) => {
-        setActiveButton(days);
-        filterData(days);
-    };
-
+      useEffect(() =>{
+        setStartDate(defaultStartDate)
+        setEndDate(defaultEndDate)
+      },[])
+    
     const confirmHandleLogout = async () => {
         setLogoutWithible(true)
-        setModalVisible(true);
-        //console.log('хуй')
-    };
+        setModalVisible(true);    };
 
     const closeResultModal = async () => {
         setLogoutWithible(false)
-
         setModalVisible(false);
     }
+         
+    const formatDate = (date) => {
+        return moment(date).format("DD.MM.YYYY");
+      };
+
+      const formatDateReg = (date) => {
+        return moment(date).format("MM.DD.YYYY");
+      };
+      
+    const fetchData = async (start, end) => {
+        const userDataString = await AsyncStorage.getItem('userData');
+        if (userDataString) {
+          const userData = JSON.parse(userDataString);
+          setUserdata(userData.name);
+          setAzs(userData.nameid_azs);
+      
+          const formdata = {
+            id: userData.codeid,
+          };
+    
+
+          console.log(start, end);
+          try {
+            let response;
+      
+            if (start && end) {
+              response = await getUsedTalons({
+                ...formdata,
+                start: formatDateReg(start),
+                end: formatDateReg(end),
+              });
+            } else {
+              response = await getUsedTalons({ ...formdata });
+            }
+
+            if(response.status === 'success'){
+            setTableData(response.data || []);
+            setReportData(response.total || []);
+            }else {
+                setTableData([]);
+                setReportData([]);
+
+                return (<Text>{response.message}</Text>)
+            }
+          } catch (err) {
+            console.error('Request error:', err.message);
+          }
+        }
+      };
+
+      const handleStartDateConfirm = (date) => {
+        setStartDate(date);
+        setStartDatePickerVisible(false);
+        fetchData(date, endDate);
+      };
+      
+      const handleEndDateConfirm = (date) => {
+        setEndDate(date);
+        setEndDatePickerVisible(false);
+        fetchData(startDate, date);
+      };
+      
+
+    
+    const renderDateInputs = () => {
+        return (
+          <View style={styles.dateInputsContainer}>
+            <View style={styles.inputContainer}>
+              <Text style={styles.labelText}>От:</Text>
+              <TouchableOpacity
+                style={styles.dateInput}
+                onPress={() => setStartDatePickerVisible(true)}
+              >
+                <Text style={styles.dateText}>{formatDate(startDate)}</Text>
+              </TouchableOpacity>
+            </View>
+            <View style={styles.inputContainer}>
+              <Text style={styles.labelText}>До:</Text>
+              <TouchableOpacity
+                style={styles.dateInput}
+                onPress={() => setEndDatePickerVisible(true)}
+              >
+                <Text style={styles.dateText}>{formatDate(endDate)}</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        );
+      };
 
     const calculateReport = () => {
         const renderTableHeader = () => {
@@ -184,12 +204,9 @@ const HomeScreen = () => {
 
                     <View style={styles.userInfoContainer}>
                         <View style={styles.iconContainer}>
-                            {/* Your icon component goes here */}
-                            {/*<Ionicons name="ios-person" size={24} color="black"/>*/}
                             <Text style={styles.usernameText}>{userdata}</Text>
                             <Text style={styles.azsText}> {azs}</Text>
                         </View>
-
 
                         <TouchableOpacity style={styles.iconContainerLogout} onPress={confirmHandleLogout}>
                             {/* Your logout icon component goes here */}
@@ -204,7 +221,6 @@ const HomeScreen = () => {
             await AsyncStorage.clear();
             navigation.replace('login');
             closeResultModal()
-
         };
 
         return (
@@ -236,14 +252,19 @@ const HomeScreen = () => {
                     </View>
                 </Modal>
 
-                <View style={styles.buttonsContainer}>
-                    <ScrollView
-                        horizontal
-                        contentContainerStyle={styles.buttonsContentContainer}
-                    >
-                        {renderButtons()}
-                    </ScrollView>
-                </View>
+                   {renderDateInputs()}
+<DateTimePickerModal
+  isVisible={isStartDatePickerVisible}
+  mode="date"
+  onConfirm={handleStartDateConfirm}
+  onCancel={() => setStartDatePickerVisible(false)}
+/>
+<DateTimePickerModal
+  isVisible={isEndDatePickerVisible}
+  mode="date"
+  onConfirm={handleEndDateConfirm}
+  onCancel={() => setEndDatePickerVisible(false)}
+/>
                 <ScrollView style={styles.tableContainer}>
                     {tableData.map((item, index) => (
                         item.codeid !== null &&
@@ -278,6 +299,36 @@ const HomeScreen = () => {
     };
 
     const styles = StyleSheet.create({
+        dateInputsContainer: {
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+           // marginVertical: 10,
+        },
+        inputContainer: {
+            flex: 1,
+            flexDirection: 'row',
+            alignItems: 'center',
+           // backgroundColor: 'blue'
+        },
+        labelText: {
+            marginRight: 10,
+            fontSize: 16,
+            fontWeight: 'bold',
+        },
+        dateInput: {
+            padding: 10,
+            borderWidth: 1,
+            borderColor: '#1b55a4',
+            borderRadius: 5,
+            width: '70%',
+            backgroundColor: '#1b55a4',
+           // color: 'red'
+           alignItems: 'center',
+        },
+        dateText: {
+            fontSize: 16,
+            color: 'white', 
+          },
         centeredView: {
             flex: 1,
             justifyContent: 'center',

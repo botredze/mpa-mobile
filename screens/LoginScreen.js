@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, Alert, TouchableWithoutFeedback, Image, Keyboard } from 'react-native';
+import { View, StyleSheet, Alert, TouchableWithoutFeedback, Image, Keyboard } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import SmoothPinCodeInput from 'react-native-smooth-pincode-input';
@@ -49,7 +49,6 @@ const LoginScreen = () => {
   console.log(code);
 
   if(code.length === 4){
-    console.log('HUIHUIHUIIU');
     handleLogin();
   };
 

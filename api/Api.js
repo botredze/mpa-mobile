@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API = 'http://212.112.105.196:3153/api';
+const API = 'http://mpa-new.333.kg/api';
 
 export async function loginUser ( formData )
 {
@@ -18,21 +18,16 @@ export async function loginUser ( formData )
 
 export async function getUsedTalons(data) {
     try {
-
-        //console.log(data)
-        const endpoint = data.endpoint
-        //console.log('EndPoint', endpoint)
-        //console.log(`${API}${endpoint}`)
-        const response = await axios.post(`${API}${endpoint}`, data);
-
-        //console.log(response);
-       //console.log(`${API}${endpoint}`, data)
+        console.log(data)
+        const response = await axios.post(`${API}/get_history`, data);
+        console.log(response);
         return response.data;
     } catch (error) {
         console.error(error);
         throw error;
     }
 }
+
 
 
 export async function getTalonData(data){
