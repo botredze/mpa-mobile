@@ -107,7 +107,7 @@ const NumberInputScreen = () => {
   const showResultModal = async () => {
     try {
       setActivateBarcode(number);
-     // Keyboard.dismiss();
+      Keyboard.dismiss();
       const formData = {
         barcode: number,
         username: login,

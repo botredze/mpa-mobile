@@ -7,7 +7,7 @@
 build/
 .idea
 .gradle
-local.properties
+../../../kover-mobile-app-master/kover-mobile-app-master/android/local.properties
 *.iml
 *.hprof
 
