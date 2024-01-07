@@ -23,25 +23,25 @@ const HomeScreen = () => {
     const defaultStartDate = startOfDay(new Date()); 
     const defaultEndDate = endOfDay(new Date());    
 
-    const [startDate, setStartDate] = useState(defaultStartDate);
-    const [endDate, setEndDate] = useState(defaultEndDate);
+    const [startDate, setStartDate] = useState(new Date());
+    const [endDate, setEndDate] = useState(new Date());
 
     const [logoutWithible, setLogoutWithible] = useState(false)
 
 
     const handleFocus = useCallback(() => {
-        fetchData(startDate,endDate);
+        fetchData(startDate, endDate);
     }, [fetchData]);
 
     useFocusEffect(handleFocus);
 
     useEffect(() => {
-        fetchData(startDate,endDate);
+        fetchData(startDate, endDate);
       }, [startDate, endDate]);
 
       useEffect(() =>{
-        setStartDate(defaultStartDate)
-        setEndDate(defaultEndDate)
+        setStartDate(new Date())
+        setEndDate(new Date())
       },[])
     
     const confirmHandleLogout = async () => {
@@ -55,10 +55,6 @@ const HomeScreen = () => {
          
     const formatDate = (date) => {
         return moment(date).format("DD.MM.YYYY");
-      };
-
-      const formatDateReg = (date) => {
-        return moment(date).format("MM.DD.YYYY");
       };
       
     const fetchData = async (start, end) => {
@@ -80,12 +76,12 @@ const HomeScreen = () => {
             if (start && end) {
               response = await getUsedTalons({
                 ...formdata,
-                start: formatDateReg(start),
-                end: formatDateReg(end),
+                start: start,
+                end: end,
               });
             } else {
-              response = await getUsedTalons({ ...formdata });
-            }
+                console.error('Request error:', err.message);
+             }
 
             if(response.status === 'success'){
             setTableData(response.data || []);
