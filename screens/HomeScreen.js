@@ -278,7 +278,7 @@ const HomeScreen = () => {
                                         <Text style={styles.value}>{item.nameid_gsm}  {item.nominal} л</Text>
                                     </View>
                                     <View style={styles.rightColumn}>
-                                        <Text style={styles.value}>{item.date_use.split(' ')[0]}</Text>
+                                        <Text style={styles.dateDate}>{item.date_use.split(' ')[0]}</Text>
                                         <Text style={styles.dateTime}>{item.date_use.split(' ')[1]}</Text>
                                     </View>
                                 </View>
@@ -596,14 +596,15 @@ const HomeScreen = () => {
         value: {
             flex: 1,
             textAlign: 'right',
-            fontSize: 15,
+            fontSize: 16,
             fontWeight: 'bold'
         },
+        
 
         barcodeValue: {
             flex: 1,
             textAlign: 'right',
-            fontSize: 16,
+            fontSize: 13,
             fontWeight: 'bold',
             color: '#022f94'
         } ,
@@ -611,35 +612,42 @@ const HomeScreen = () => {
         valueNuminal: {
             flex: 1,
             textAlign: 'center',
-            fontSize: 15,
+            fontSize: 13,
             fontWeight: 'bold'
         },
 
         valueGsm: {
             flex: 1,
             textAlign: 'center',
-            fontSize: 15,
+            fontSize: 13,
             fontWeight: 'bold'
         },
 
         valueNum: {
             flex: 1,
             textAlign: 'right',
-            fontSize: 17,
+            fontSize: 13,
             fontWeight: 'bold',
         },
 
         dateTime: {
             flex: 1,
             textAlign: 'right',
-            fontSize: 17,
-            color: 'red'
+            fontSize: 16,
+            color: 'red', 
+            fontWeight: 'bold',
+        },      
+          dateDate: {
+            flex: 1,
+            textAlign: 'right',
+            fontSize: 16,
+            fontWeight: 'bold'
         },
 
         timevalue: {
             flex: 1,
             textAlign: 'right',
-            fontSize: 15,
+            fontSize: 17,
             color: '#ff1313'
         },
 
